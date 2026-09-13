@@ -1,0 +1,15 @@
+pull_request_rules: []
+merge_protections:
+  - name: VM6 Deployment Easy
+    if:
+      - head = deployment-easy
+    success_conditions:
+      - base = main
+  - name: VM6 Deployment Strict
+    if:
+      - head = deployment-strict
+    success_conditions:
+      - label = vm6-deployment-required
+merge_protections_settings:
+  reporting_method: deployments
+  post_comment: true
