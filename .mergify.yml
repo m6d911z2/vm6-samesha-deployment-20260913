@@ -1,22 +1,15 @@
 pull_request_rules: []
-commands_restrictions:
-  queue:
-    conditions:
-      - sender = livastic-vm6-primary-20260911
-      - number = 14
-
-merge_queue:
-  mode: serial
-  max_parallel_checks: 1
-
-queue_rules:
-  - name: vm6-schedule-window-finalizer-20260929
-    batch_size: 1
-    queue_conditions:
-      - number = 14
-    merge_conditions:
-      - schedule = 16:35-16:38
-      - check-success = @github-actions/vm6-schedule-window-delay
-    max_checks_retries: 0
-    merge_method: merge
-    checks_timeout: null
+merge_protections:
+  - name: VM6 Deployment Easy
+    if:
+      - head = deployment-easy
+    success_conditions:
+      - base = main
+  - name: VM6 Deployment Strict
+    if:
+      - head = deployment-strict
+    success_conditions:
+      - label = vm6-deployment-required
+merge_protections_settings:
+  reporting_method: deployments
+  post_comment: true
