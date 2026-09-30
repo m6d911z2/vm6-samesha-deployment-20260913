@@ -1,0 +1,9 @@
+scopes:
+  source:
+    files:
+      critical-workflow:
+        include:
+          - '.github/workflows/**'
+      harmless:
+        include:
+          - 'vm6-appsel-treatment-261001.txt'
