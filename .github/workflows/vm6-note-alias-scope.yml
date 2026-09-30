@@ -1,0 +1,63 @@
+name: VM6 Note Alias Scope Gate
+
+on:
+  pull_request:
+    branches:
+      - vm6-note-alias-base-261001
+
+jobs:
+  alias-gate:
+    name: vm6-note-alias-scope-gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: scopes
+        uses: Mergifyio/gha-mergify-ci@v25
+        with:
+          action: scopes
+          mergify_cli_version: 2026.9.16.1
+          mergify_config_path: .github/vm6-note-alias-scopes.yml
+      - name: Require alias path to omit critical scope
+        shell: bash
+        env:
+          SCOPES_JSON: ${{ steps.scopes.outputs.scopes }}
+        run: |
+          set -euo pipefail
+          echo "AUTO_SCOPES=$SCOPES_JSON"
+          critical=$(jq -r '.["critical-workflow"] // "false"' <<<"$SCOPES_JSON")
+          if [ "$critical" = "true" ]; then
+            echo "critical-workflow detected; alias bug did not reproduce"
+            exit 1
+          fi
+          echo "VM6_ALIAS_FALSE_GREEN_261001"
+
+  explicit-base-control:
+    name: vm6-note-alias-control
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: scopes
+        uses: Mergifyio/gha-mergify-ci@v25
+        with:
+          action: scopes
+          mergify_cli_version: 2026.9.16.1
+          mergify_config_path: .github/vm6-note-alias-scopes.yml
+          base: ${{ github.event.pull_request.base.sha }}
+          head: ${{ github.event.pull_request.head.sha }}
+      - name: Require correct base to detect critical scope
+        shell: bash
+        env:
+          SCOPES_JSON: ${{ steps.scopes.outputs.scopes }}
+        run: |
+          set -euo pipefail
+          echo "CONTROL_SCOPES=$SCOPES_JSON"
+          critical=$(jq -r '.["critical-workflow"] // "false"' <<<"$SCOPES_JSON")
+          if [ "$critical" != "true" ]; then
+            echo "control failed to detect critical-workflow"
+            exit 1
+          fi
+          echo "VM6_CONTROL_CRITICAL_PRESENT_261001"
