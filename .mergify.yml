@@ -19,6 +19,11 @@ merge_protections:
       - head = deployment-strict
     success_conditions:
       - label = vm6-deployment-required
+  - name: VM6 Note Alias Final Queue Source
+    if:
+      - head = vm6-note-alias-final-source-261001
+    success_conditions:
+      - base = main
 merge_protections_settings:
   reporting_method: deployments
   post_comment: true

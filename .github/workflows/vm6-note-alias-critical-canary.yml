@@ -1,0 +1,10 @@
+name: VM6 Note Alias Critical Canary
+
+on:
+  workflow_dispatch:
+
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'VM6 controlled note-alias critical-workflow canary'
